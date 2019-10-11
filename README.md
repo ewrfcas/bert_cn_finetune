@@ -82,7 +82,7 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | ------ | ------ |
 | siBert_base | F1:80.714(81.14) EM:64.44(65.04) |
 | siALBert_middle | F1:80.9838(81.299) EM:63.796(64.202) |
-| 哈工大讯飞 roberta_wwm_ext_base | **F1:81.510(81.684) EM:64.924(65.574)** |
+| 哈工大讯飞 roberta_wwm_ext_base | F1:81.510(81.684) EM:64.924(65.574) |
 | brightmart roberta_large | F1:80.16(80.475) EM:65.249(66.133) |
 
 
