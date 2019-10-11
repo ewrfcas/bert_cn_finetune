@@ -14,8 +14,6 @@
 # limitations under the License.
 """Convert BERT checkpoint."""
 
-# from __future__ import absolute_import
-# from __future__ import division
 from __future__ import print_function
 
 import os
@@ -24,12 +22,11 @@ import argparse
 import tensorflow as tf
 import torch
 import numpy as np
-import ipdb
 
-from models.pytorch_modeling import BertConfig, BertForPreTraining
+from models.pytorch_modeling import BertConfig, BertForPreTraining, ALBertConfig, ALBertForPreTraining
 
 
-def convert_tf_checkpoint_to_pytorch(tf_checkpoint_path, bert_config_file, pytorch_dump_path):
+def convert_tf_checkpoint_to_pytorch(tf_checkpoint_path, bert_config_file, pytorch_dump_path, is_albert):
     config_path = os.path.abspath(bert_config_file)
     tf_path = os.path.abspath(tf_checkpoint_path)
     print("Converting TensorFlow checkpoint from {} with config at {}".format(tf_path, config_path))
@@ -44,9 +41,14 @@ def convert_tf_checkpoint_to_pytorch(tf_checkpoint_path, bert_config_file, pytor
         arrays.append(array)
 
     # Initialise PyTorch model
-    config = BertConfig.from_json_file(bert_config_file)
-    print("Building PyTorch model from configuration: {}".format(str(config)))
-    model = BertForPreTraining(config)
+    if is_albert:
+        config = ALBertConfig.from_json_file(bert_config_file)
+        print("Building PyTorch model from configuration: {}".format(str(config)))
+        model = ALBertForPreTraining(config)
+    else:
+        config = BertConfig.from_json_file(bert_config_file)
+        print("Building PyTorch model from configuration: {}".format(str(config)))
+        model = BertForPreTraining(config)
 
     for name, array in zip(names, arrays):
         name = name.split('/')
@@ -76,6 +78,9 @@ def convert_tf_checkpoint_to_pytorch(tf_checkpoint_path, bert_config_file, pytor
                 pointer = pointer[num]
         if m_name[-11:] == '_embeddings':
             pointer = getattr(pointer, 'weight')
+        elif m_name[-13:] == '_embeddings_2':
+            pointer = getattr(pointer, 'weight')
+            array = np.transpose(array)
         elif m_name == 'kernel':
             array = np.transpose(array)
         try:
@@ -95,19 +100,24 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     ## Required parameters
     parser.add_argument("--tf_checkpoint_path",
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_model.ckpt',
+                        default='check_points/pretrain_models/albert_large_zh/albert_model.ckpt',
                         type=str,
                         help="Path the TensorFlow checkpoint path.")
     parser.add_argument("--bert_config_file",
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_config.json',
+                        default='check_points/pretrain_models/albert_large_zh/albert_config_large.json',
                         type=str,
                         help="The config json file corresponding to the pre-trained BERT model. \n"
                              "This specifies the model architecture.")
     parser.add_argument("--pytorch_dump_path",
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/pytorch_bert_model.pth',
+                        default='check_points/pretrain_models/albert_large_zh/pytorch_albert_model.pth',
                         type=str,
                         help="Path to the output PyTorch model.")
+    parser.add_argument("--is_albert",
+                        default=True,
+                        type=bool,
+                        help="whether is albert?")
     args = parser.parse_args()
     convert_tf_checkpoint_to_pytorch(args.tf_checkpoint_path,
                                      args.bert_config_file,
-                                     args.pytorch_dump_path)
+                                     args.pytorch_dump_path,
+                                     args.is_albert)
