@@ -1,6 +1,6 @@
 ## BERT下游任务finetune列表
 
-finetune基于官方代码改造的模型都是基于pytorch的，因为tensorflow的fp16和多gpu还要重写忒麻烦了，有兴趣的童鞋可以补充一下。
+finetune基于官方代码改造的模型都是基于pytorch的，因为tensorflow的fp16和多gpu还要重写，有兴趣的童鞋可以补充一下。
 
 ### 模型及相关代码来源
 
@@ -19,7 +19,9 @@ finetune基于官方代码改造的模型都是基于pytorch的，因为tensorfl
 FP16的训练可以显著降低显存压力(如果有V100等GPU资源还能提高速度)。但是最新版编译的apex-FP16对并行的支持并不友好(https://github.com/NVIDIA/apex/issues/227)。  
 实践下来bert相关任务的finetune任务对fp16的数值压力是比较小的，因此可以更多的以计算精度换取效率，所以我还是倾向于使用老版的FusedAdam+FP16_Optimizer的组合。  
 由于最新的apex已经舍弃这2个方法了，需要在编译apex的时候额外加入命令--deprecated_fused_adam  
-即pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext"  --global-option="--deprecated_fused_adam" ./
+```
+pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext"  --global-option="--deprecated_fused_adam" ./
+```
 
 ### 参与任务
 
