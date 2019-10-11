@@ -160,13 +160,14 @@ class BERTAdam(Optimizer):
 
 
 def get_optimization(model, float16, learning_rate, loss_scale, total_steps, schedule,
-                     warmup_iters, weight_decay_rate):
+                     warmup_iters, weight_decay_rate, opt_pooler=False):
     # Prepare optimizer
     param_optimizer = list(model.named_parameters())
 
     # hack to remove pooler, which is not used
     # thus it produce None grad that break apex
-    param_optimizer = [n for n in param_optimizer if 'pooler' not in n[0]]
+    if opt_pooler is False:
+        param_optimizer = [n for n in param_optimizer if 'pooler' not in n[0]]
     no_decay = ['bias', 'LayerNorm.bias', 'LayerNorm.weight']
     optimizer_parameters = [
         {'params': [p for n, p in param_optimizer if not any([nd in n for nd in no_decay])],

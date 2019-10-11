@@ -77,7 +77,7 @@ def evaluate(model, args, eval_examples, eval_features, device, global_steps, be
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu_ids', type=str, default='0,4')
+    parser.add_argument('--gpu_ids', type=str, default='0,1,2,3')
 
     # training parameter
     parser.add_argument('--train_epochs', type=int, default=2)
@@ -100,23 +100,23 @@ if __name__ == '__main__':
 
     # data dir
     parser.add_argument('--train_dir', type=str,
-                        default='dataset/DRCD/train_features_roberta512.json')
+                        default='dataset/DRCD/train_features_roberta256.json')
     parser.add_argument('--dev_dir1', type=str,
-                        default='dataset/DRCD/dev_examples_roberta512.json')
+                        default='dataset/DRCD/dev_examples_roberta256.json')
     parser.add_argument('--dev_dir2', type=str,
-                        default='dataset/DRCD/dev_features_roberta512.json')
+                        default='dataset/DRCD/dev_features_roberta256.json')
     parser.add_argument('--train_file', type=str,
                         default='origin_data/DRCD/DRCD_training.json')
     parser.add_argument('--dev_file', type=str,
                         default='origin_data/DRCD/DRCD_dev.json')
     parser.add_argument('--bert_config_file', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_config.json')
+                        default='check_points/pretrain_models/roberta_zh_large/bert_config.json')
     parser.add_argument('--vocab_file', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/vocab.txt')
+                        default='check_points/pretrain_models/roberta_zh_large/vocab.txt')
     parser.add_argument('--init_restore_dir', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/pytorch_bert_model.pth')
+                        default='check_points/pretrain_models/roberta_zh_large/roberta_large_pytorch.pth')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/DRCD/roberta_wwm_ext_base/')
+                        default='check_points/DRCD/roberta_zh_large/')
     parser.add_argument('--setting_file', type=str, default='setting.txt')
     parser.add_argument('--log_file', type=str, default='log.txt')
 

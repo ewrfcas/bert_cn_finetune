@@ -80,7 +80,7 @@ def evaluate(model, args, eval_examples, eval_features, device, global_steps, be
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu_ids', type=str, default='5,6')
+    parser.add_argument('--gpu_ids', type=str, default='0,5,6,7')
 
     # training parameter
     parser.add_argument('--train_epochs', type=int, default=2)
@@ -104,23 +104,23 @@ if __name__ == '__main__':
 
     # data dir
     parser.add_argument('--train_dir', type=str,
-                        default='dataset/CJRC/train_features_roberta512.json')
+                        default='dataset/CJRC/train_features_roberta256.json')
     parser.add_argument('--dev_dir1', type=str,
-                        default='dataset/CJRC/dev_examples_roberta512.json')
+                        default='dataset/CJRC/dev_examples_roberta256.json')
     parser.add_argument('--dev_dir2', type=str,
-                        default='dataset/CJRC/dev_features_roberta512.json')
+                        default='dataset/CJRC/dev_features_roberta256.json')
     parser.add_argument('--train_file', type=str,
                         default='origin_data/CJRC/train_data.json')
     parser.add_argument('--dev_file', type=str,
                         default='origin_data/CJRC/dev_data.json')
     parser.add_argument('--bert_config_file', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_config.json')
+                        default='check_points/pretrain_models/roberta_zh_large/bert_config.json')
     parser.add_argument('--vocab_file', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/vocab.txt')
+                        default='check_points/pretrain_models/roberta_zh_large/vocab.txt')
     parser.add_argument('--init_restore_dir', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/pytorch_bert_model.pth')
+                        default='check_points/pretrain_models/roberta_zh_large/roberta_large_pytorch.pth')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/CJRC/roberta_wwm_ext_base/')
+                        default='check_points/CJRC/roberta_zh_large/')
     parser.add_argument('--setting_file', type=str, default='setting.txt')
     parser.add_argument('--log_file', type=str, default='log.txt')
 
@@ -206,7 +206,8 @@ if __name__ == '__main__':
                                      total_steps=total_steps,
                                      schedule=args.schedule,
                                      warmup_iters=args.warmup_iters,
-                                     weight_decay_rate=args.weight_decay_rate)
+                                     weight_decay_rate=args.weight_decay_rate,
+                                     opt_pooler=True)
 
         all_input_ids = torch.tensor([f['input_ids'] for f in train_features], dtype=torch.long)
         all_input_mask = torch.tensor([f['input_mask'] for f in train_features], dtype=torch.long)

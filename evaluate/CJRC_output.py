@@ -4,6 +4,8 @@ from tokenizations.tokenization_version2 import BasicTokenizer
 import math
 import json
 from tqdm import tqdm
+
+
 # import ipdb
 
 
@@ -172,10 +174,10 @@ def write_predictions(all_examples, all_features, all_results, n_best_size,
         for entry in nbest:
             total_scores.append(entry.start_logit + entry.end_logit)
             if not best_non_null_entry:
-                if entry.text not in {'YES','NO',''}:
+                if entry.text not in {'YES', 'NO', ''}:
                     best_non_null_entry = entry
             if not best_null_entry:
-                if entry.text in {'YES','NO',''}:
+                if entry.text in {'YES', 'NO', ''}:
                     best_null_entry = entry
 
         probs = _compute_softmax(total_scores)
@@ -199,7 +201,10 @@ def write_predictions(all_examples, all_features, all_results, n_best_size,
             all_nbest_json[example['qid']] = nbest_json
         else:
             # predict "" iff the null score - the score of best non-null > threshold
-            score_diff = score_null - best_non_null_entry.start_logit - best_non_null_entry.end_logit
+            if best_non_null_entry:
+                score_diff = score_null - best_non_null_entry.start_logit - best_non_null_entry.end_logit
+            else:
+                score_diff = 9999  # 说明没有span的答案
             scores_diff_json[example['qid']] = score_diff
             if score_diff > null_score_diff_threshold:
                 all_predictions[example['qid']] = best_null_entry.text
