@@ -14,6 +14,10 @@ finetune基于官方代码改造的模型都是基于pytorch的，因为tensorfl
 
 5. 自己瞎折腾的siBert (https://github.com/ewrfcas/SiBert_tensorflow)
 
+### 关于FP16
+
+FP16的训练可以显著降低显存压力(如果有V100等GPU资源还能提高速度)。但是由于最新版编译的apex-FP16对并行的支持并不友好(https://github.com/NVIDIA/apex/issues/227)，并且实践下来bert相关任务的finetune任务对fp16的数值压力是比较小的，因此可以更多的以计算精度换取效率。所以我还是倾向于使用老版的FusedAdam+FP16_Optimizer的组合。由于最新的apex已经舍弃这2个方法了，需要在编译apex的时候额外加入命令--deprecated_fused_adam，即pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext"  --global-option="--deprecated_fused_adam"./
+
 ### 参与任务
 
 1. CMRC 2018：篇章片段抽取型阅读理解（简体中文，只测了dev）
@@ -46,11 +50,11 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 
 | models | config |
 | ------ | ------ |
-| siBert_base | L=12,H=768,A=12,max_len=512 |
-| siALBert_middle | L=16,H=1024,E=128,A=16,max_len=512 |
-| 哈工大讯飞 roberta_wwm_ext_base | L=12,H=768,A=12,max_len=512 |
-| brightmart roberta_middle | L=24,H=768,A=12,max_len=512 |
-| brightmart roberta_large | L=24,H=1024,A=16,**max_len=256** |
+| siBert_base | L=12, H=768, A=12, max_len=512 |
+| siALBert_middle | L=16, H=1024, E=128, A=16, max_len=512 |
+| 哈工大讯飞 roberta_wwm_ext_base | L=12, H=768, A=12, max_len=512 |
+| brightmart roberta_middle | L=24, H=768, A=12, max_len=512 |
+| brightmart roberta_large | L=24, H=1024, A=16, **max_len=256** |
 
 
 ### 结果
@@ -61,19 +65,19 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 
 | models | DEV |
 | ------ | ------ |
-| sibert_base | F1: 87.521(88.628) EM: 67.381(69.152) |
-| sialbert_middle | F1: 87.6956(87.878) EM: 67.897(68.624) |
-| 哈工大讯飞 roberta_wwm_ext_base | F1: 87.521(88.628) EM: 67.381(69.152) |
-| brightmart roberta_middle | F1: 86.841(87.242) EM: 67.195(68.313) |
-| brightmart roberta_large | **F1: 88.608(89.431) EM: 69.935(72.538)** |
+| sibert_base | F1:87.521(88.628) EM:67.381(69.152) |
+| sialbert_middle | F1:87.6956(87.878) EM:67.897(68.624) |
+| 哈工大讯飞 roberta_wwm_ext_base | F1:87.521(88.628) EM:67.381(69.152) |
+| brightmart roberta_middle | F1:86.841(87.242) EM:67.195(68.313) |
+| brightmart roberta_large | **F1:88.608(89.431) EM:69.935(72.538)** |
 
 #### DRCD(阅读理解)
 
 | models | DEV |
 | ------ | ------ |
-| siBert_base | F1: 93.343(93.524) EM: 87.968(88.28) |
+| siBert_base | F1:93.343(93.524) EM:87.968(88.28) |
 | siALBert_middle | F1:93.865(93.975) EM:88.723(88.961) |
-| 哈工大讯飞 roberta_wwm_ext_base | F1: 94.257(94.48) EM: 89.291(89.642) |
+| 哈工大讯飞 roberta_wwm_ext_base | F1:94.257(94.48) EM:89.291(89.642) |
 | brightmart roberta_large | **F1:94.933(95.057) EM:90.113(90.238)** |
 
 #### CJRC(带有yes,no,unkown的阅读理解)
