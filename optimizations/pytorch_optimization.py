@@ -87,7 +87,6 @@ class BERTAdam(Optimizer):
 
     def step(self, closure=None):
         """Performs a single optimization step.
-
         Arguments:
             closure (callable, optional): A closure that reevaluates the model
                 and returns the loss.
@@ -152,16 +151,13 @@ class BERTAdam(Optimizer):
 
                 state['step'] += 1
 
-                # step_size = lr_scheduled * math.sqrt(bias_correction2) / bias_correction1
-                # bias_correction1 = 1 - beta1 ** state['step']
-                # bias_correction2 = 1 - beta2 ** state['step']
-
         return loss
 
 
-def get_optimization(model, float16, learning_rate, loss_scale, total_steps, schedule,
-                     warmup_iters, weight_decay_rate, opt_pooler=False):
+def get_optimization(model, float16, learning_rate, total_steps, schedule,
+                     warmup_rate, weight_decay_rate, max_grad_norm, opt_pooler=False):
     # Prepare optimizer
+    assert 0.0 <= warmup_rate <= 1.0
     param_optimizer = list(model.named_parameters())
 
     # hack to remove pooler, which is not used
@@ -177,8 +173,8 @@ def get_optimization(model, float16, learning_rate, loss_scale, total_steps, sch
     ]
     if float16:
         try:
-            from apex.optimizers import FP16_Optimizer
-            from apex.optimizers import FusedAdam
+            from apex.contrib.optimizers import FP16_Optimizer
+            from apex.contrib.optimizers import FusedAdam
         except ImportError:
             raise ImportError(
                 "Please install apex from https://www.github.com/nvidia/apex to use distributed and fp16 training.")
@@ -186,17 +182,13 @@ def get_optimization(model, float16, learning_rate, loss_scale, total_steps, sch
         optimizer = FusedAdam(optimizer_parameters,
                               lr=learning_rate,
                               bias_correction=False,
-                              max_grad_norm=1.0)
-
-        if loss_scale == 0:
-            optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=True)
-        else:
-            optimizer = FP16_Optimizer(optimizer, static_loss_scale=loss_scale)
+                              max_grad_norm=max_grad_norm)
+        optimizer = FP16_Optimizer(optimizer, dynamic_loss_scale=True)
     else:
         optimizer = BERTAdam(params=optimizer_parameters,
                              lr=learning_rate,
-                             warmup=warmup_iters,
-                             max_grad_norm=1.0,
+                             warmup=warmup_rate,
+                             max_grad_norm=max_grad_norm,
                              t_total=total_steps,
                              schedule=schedule,
                              weight_decay_rate=weight_decay_rate)

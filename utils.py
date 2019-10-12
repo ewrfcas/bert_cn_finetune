@@ -123,17 +123,23 @@ def torch_init_model(model, init_checkpoint):
     print('error msgs:{}'.format(error_msgs))
 
 
-def torch_save_model(model, output_dir, global_step, max_save_num=1):
+def torch_save_model(model, output_dir, scores, max_save_num=1):
     # Save model checkpoint
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     model_to_save = model.module if hasattr(model, 'module') else model  # Take care of distributed/parallel training
     saved_pths = glob(os.path.join(output_dir, '*.pth'))
-    saved_pths.sort(key=lambda x: int(x.split('_')[-1].replace('.pth', '')))
+    saved_pths.sort()
     while len(saved_pths) >= max_save_num:
         if os.path.exists(saved_pths[0].replace('//', '/')):
             os.remove(saved_pths[0].replace('//', '/'))
             del saved_pths[0]
+
+    save_prex = "checkpoint_score"
+    for k in scores:
+        save_prex += ('_' + k + '-' + str(scores[k])[:6])
+    save_prex += '.pth'
+
     torch.save(model_to_save.state_dict(),
-               os.path.join(output_dir, 'checkpoint_' + str(global_step) + '.pth'))
+               os.path.join(output_dir, save_prex))
     print("Saving model checkpoint to %s", output_dir)
