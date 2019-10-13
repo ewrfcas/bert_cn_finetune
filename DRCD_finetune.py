@@ -70,12 +70,13 @@ def evaluate(model, args, eval_examples, eval_features, device, global_steps, be
         best_em = float(tmp_result['EM'])
 
     if float(tmp_result['F1']) + float(tmp_result['EM']) > best_f1_em:
+        best_f1_em = float(tmp_result['F1']) + float(tmp_result['EM'])
         utils.torch_save_model(model, args.checkpoint_dir,
                                {'f1': float(tmp_result['F1']), 'em': float(tmp_result['EM'])}, max_save_num=1)
 
     model.train()
 
-    return best_f1, best_em
+    return best_f1, best_em, best_f1_em
 
 
 if __name__ == '__main__':
@@ -88,7 +89,7 @@ if __name__ == '__main__':
     parser.add_argument('--lr', type=float, default=3e-5)
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--clip_norm', type=float, default=1.0)
-    parser.add_argument('--warmup_rate', type=float, default=0.1)
+    parser.add_argument('--warmup_rate', type=float, default=0.05)
     parser.add_argument("--schedule", default='warmup_linear', type=str, help='schedule')
     parser.add_argument("--weight_decay_rate", default=0.01, type=float, help='weight_decay_rate')
     parser.add_argument('--seed', type=list, default=[123, 456, 789, 556, 977])
@@ -263,10 +264,8 @@ if __name__ == '__main__':
                     iteration += 1
 
                     if global_steps % eval_steps == 0:
-                        best_f1, best_em = evaluate(model, args, dev_examples, dev_features, device, global_steps,
-                                                    best_f1, best_em, best_f1_em)
-                        if best_f1 + best_em > best_f1_em:
-                            best_f1_em = best_f1 + best_em
+                        best_f1, best_em, best_f1_em = evaluate(model, args, dev_examples, dev_features, device,
+                                                                global_steps, best_f1, best_em, best_f1_em)
 
         F1s.append(best_f1)
         EMs.append(best_em)
