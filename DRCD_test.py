@@ -54,7 +54,7 @@ def test(model, args, eval_examples, eval_features, device):
                       do_lower_case=True, output_prediction_file=output_prediction_file,
                       output_nbest_file=output_nbest_file)
 
-    tmp_result = get_eval(args.dev_file, output_prediction_file)
+    tmp_result = get_eval(args.test_file, output_prediction_file)
     print(tmp_result)
 
     model.train()
