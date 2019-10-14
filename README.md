@@ -45,7 +45,7 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ### 评测标准
 
-验证集一般会调整learning_rate，warmup_rate，train_epoch等参数，选择最优的参数用五个不同的随机种子测试5次取平均和括号内最大值。测试集会直接用最佳的验证集模型进行验证(todo)。
+验证集一般会调整learning_rate，warmup_rate，train_epoch等参数，选择最优的参数用五个不同的随机种子测试5次取平均和括号内最大值。测试集会直接用最佳的验证集模型进行验证。
 
 ### 模型介绍
 
@@ -86,13 +86,13 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 
 #### DRCD(阅读理解)
 
-| models | DEV |
-| ------ | ------ |
-| siBert_base | F1:93.343(93.524) EM:87.968(88.28) |
-| siALBert_middle | F1:93.865(93.975) EM:88.723(88.961) |
-| 哈工大讯飞 roberta_wwm_ext_base | F1:94.257(94.48) EM:89.291(89.642) |
-| brightmart roberta_large | **F1:94.933(95.057) EM:90.113(90.238)** |
-| brightmart albert_large | F1:93.9034(94.034) EM:88.882(89.132) |
+| models | DEV | TEST |
+| ------ | ------ | ------ |
+| siBert_base | F1:93.343(93.524) EM:87.968(88.28) | todo |
+| siALBert_middle | F1:93.865(93.975) EM:88.723(88.961) | F1:93.857 EM:88.033 |
+| 哈工大讯飞 roberta_wwm_ext_base | F1:94.257(94.48) EM:89.291(89.642) | F1:93.526 EM:88.119 |
+| brightmart roberta_large | **F1:94.933(95.057) EM:90.113(90.238)** | **F1:94.254 EM:89.350** |
+| brightmart albert_large | F1:93.9034(94.034) EM:88.882(89.132) | F1:93.057 EM:87.518 |
 
 #### CJRC(带有yes,no,unkown的阅读理解)
 

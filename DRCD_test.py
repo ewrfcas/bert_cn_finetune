@@ -57,20 +57,18 @@ def test(model, args, eval_examples, eval_features, device):
     tmp_result = get_eval(args.test_file, output_prediction_file)
     print(tmp_result)
 
-    model.train()
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--gpu_ids', type=str, default='6')
 
     # training parameter
-    parser.add_argument('--train_epochs', type=int, default=3)
+    parser.add_argument('--train_epochs', type=int, default=2)
     parser.add_argument('--n_batch', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=2e-5)
+    parser.add_argument('--lr', type=float, default=3e-5)
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--clip_norm', type=float, default=1.0)
-    parser.add_argument('--warmup_rate', type=float, default=0.05)
+    parser.add_argument('--warmup_rate', type=float, default=0.1)
     parser.add_argument("--schedule", default='warmup_linear', type=str, help='schedule')
     parser.add_argument("--weight_decay_rate", default=0.01, type=float, help='weight_decay_rate')
     parser.add_argument('--float16', type=bool, default=True)  # only sm >= 7.0 (tensorcores)
@@ -88,13 +86,13 @@ if __name__ == '__main__':
     parser.add_argument('--test_file', type=str,
                         default='origin_data/DRCD/DRCD_test.json')
     parser.add_argument('--bert_config_file', type=str,
-                        default='check_points/pretrain_models/albert_large_zh/albert_config_large.json')
+                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_config.json')
     parser.add_argument('--vocab_file', type=str,
-                        default='check_points/pretrain_models/albert_large_zh/vocab.txt')
+                        default='check_points/pretrain_models/roberta_wwm_ext_base/vocab.txt')
     parser.add_argument('--init_restore_dir', type=str,
-                        default='check_points/DRCD/albert_large_zh/')
+                        default='check_points/DRCD/roberta_wwm_ext_base/')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/DRCD/albert_large_zh/')
+                        default='check_points/DRCD/roberta_wwm_ext_base/')
 
     # use some global vars for convenience
     args = parser.parse_args()
