@@ -2,7 +2,7 @@
 
 finetune基于官方代码改造的模型基于pytorch/tensorflow双版本
 
-*** 2019-10-15: 增加tensorflow(bert/roberta)在cmrc2018上的finetune代码 ***
+*** 2019-10-15: 增加tensorflow(bert/roberta)在cmrc2018上的finetune代码(暂仅支持单卡) ***
 
 2019-10-14: 新增DRCD test结果
 

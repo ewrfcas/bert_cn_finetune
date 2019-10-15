@@ -40,8 +40,8 @@ if __name__ == '__main__':
 
     # training parameter
     parser.add_argument('--train_epochs', type=int, default=2)
-    parser.add_argument('--n_batch', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=3e-5)
+    parser.add_argument('--n_batch', type=int, default=12)
+    parser.add_argument('--lr', type=float, default=2e-5)
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--clip_norm', type=float, default=1.0)
     parser.add_argument('--loss_scale', type=float, default=2.0 ** 15)
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     # data dir
     parser.add_argument('--vocab_file', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/vocab.txt')
+                        default='check_points/pretrain_models/roberta_wwm_ext_large/vocab.txt')
 
     parser.add_argument('--train_dir', type=str, default='dataset/cmrc2018/train_features_roberta512.json')
     parser.add_argument('--dev_dir1', type=str, default='dataset/cmrc2018/dev_examples_roberta512.json')
@@ -67,11 +67,11 @@ if __name__ == '__main__':
     parser.add_argument('--train_file', type=str, default='origin_data/cmrc2018/cmrc2018_train.json')
     parser.add_argument('--dev_file', type=str, default='origin_data/cmrc2018/cmrc2018_dev.json')
     parser.add_argument('--bert_config_file', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_config.json')
+                        default='check_points/pretrain_models/roberta_wwm_ext_large/bert_config.json')
     parser.add_argument('--init_restore_dir', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_model.ckpt')
+                        default='check_points/pretrain_models/roberta_wwm_ext_large/bert_model.ckpt')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/cmrc2018/roberta_wwm_ext_base/')
+                        default='check_points/cmrc2018/roberta_wwm_ext_large/')
     parser.add_argument('--setting_file', type=str, default='setting.txt')
     parser.add_argument('--log_file', type=str, default='log.txt')
 
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     args = utils.check_args(args)
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_ids
 
-    print_rank0('######## generating data ########')
+    print('######## generating data ########')
 
     tokenizer = BertTokenizer(vocab_file=args.vocab_file, do_lower_case=True)
     assert args.vocab_size == len(tokenizer.vocab)
