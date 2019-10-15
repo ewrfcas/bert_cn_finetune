@@ -4,7 +4,7 @@ finetune基于官方代码改造的模型基于pytorch/tensorflow双版本
 
 *** 2019-10-15: 增加tensorflow(bert/roberta)在cmrc2018上的finetune代码(暂仅支持单卡) ***
 
-2019-10-14: 新增DRCD test结果
+*** 2019-10-14: 新增DRCD test结果 ***
 
 *** 2019-10-12: pytorch支持albert ***
 
@@ -34,12 +34,10 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 blocksparse(https://github.com/openai/blocksparse)可以在tensorflow1.13版本直接pip安装，否则可以自己clone后编译。  
 其中fast_gelu以及self-attention中的softmax能够极大缓解显存压力。另外部分dropout位置我有所调整，整体显存占用下降大约30%~40%。
 
-tensorflow roberta_large length=512 fp16
-
 model | length | batch | memory |
 | ------ | ------ | ------ | ------ |
-| roberta_base | 512 | 32 | 16GB |
-| roberta_large | 512 | 12 | 16GB |
+| roberta_base_fp16 | 512 | 32 | 16GB |
+| roberta_large_fp16 | 512 | 12 | 16GB |
 
 
 ### 参与任务
