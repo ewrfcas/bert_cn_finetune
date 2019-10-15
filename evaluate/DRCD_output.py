@@ -1,7 +1,7 @@
 import collections
 import sys
 sys.path.append('../tokenizations')
-from tokenizations.tokenization_version2 import BasicTokenizer
+from tokenizations.offical_tokenization import BasicTokenizer
 import math
 import json
 from tqdm import tqdm
