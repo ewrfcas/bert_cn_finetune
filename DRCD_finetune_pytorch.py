@@ -81,15 +81,15 @@ def evaluate(model, args, eval_examples, eval_features, device, global_steps, be
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu_ids', type=str, default='0,1,2,3')
+    parser.add_argument('--gpu_ids', type=str, default='0,1,2,3,4,5,6,7')
 
     # training parameter
-    parser.add_argument('--train_epochs', type=int, default=2)
+    parser.add_argument('--train_epochs', type=int, default=3)
     parser.add_argument('--n_batch', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=3e-5)
+    parser.add_argument('--lr', type=float, default=2.5e-5)
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--clip_norm', type=float, default=1.0)
-    parser.add_argument('--warmup_rate', type=float, default=0.05)
+    parser.add_argument('--warmup_rate', type=float, default=0.06)
     parser.add_argument("--schedule", default='warmup_linear', type=str, help='schedule')
     parser.add_argument("--weight_decay_rate", default=0.01, type=float, help='weight_decay_rate')
     parser.add_argument('--seed', type=list, default=[123, 456, 789, 556, 977])
@@ -112,13 +112,13 @@ if __name__ == '__main__':
     parser.add_argument('--dev_file', type=str,
                         default='origin_data/DRCD/DRCD_dev.json')
     parser.add_argument('--bert_config_file', type=str,
-                        default='check_points/pretrain_models/albert_large_zh/albert_config_large.json')
+                        default='check_points/pretrain_models/albert_xlarge_zh/bert_config.json')
     parser.add_argument('--vocab_file', type=str,
-                        default='check_points/pretrain_models/albert_large_zh/vocab.txt')
+                        default='check_points/pretrain_models/albert_xlarge_zh/vocab.txt')
     parser.add_argument('--init_restore_dir', type=str,
-                        default='check_points/pretrain_models/albert_large_zh/pytorch_albert_model.pth')
+                        default='check_points/pretrain_models/albert_xlarge_zh/pytorch_model.pth')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/DRCD/albert_large_zh/')
+                        default='check_points/DRCD/albert_xlarge_zh/')
     parser.add_argument('--setting_file', type=str, default='setting.txt')
     parser.add_argument('--log_file', type=str, default='log.txt')
 

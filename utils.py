@@ -7,19 +7,20 @@ import torch
 from glob import glob
 
 
-def check_args(args):
+def check_args(args, rank=0):
     args.setting_file = os.path.join(args.checkpoint_dir, args.setting_file)
     args.log_file = os.path.join(args.checkpoint_dir, args.log_file)
-    os.makedirs(args.checkpoint_dir, exist_ok=True)
-    with open(args.setting_file, 'wt') as opt_file:
-        opt_file.write('------------ Options -------------\n')
-        print('------------ Options -------------')
-        for k in args.__dict__:
-            v = args.__dict__[k]
-            opt_file.write('%s: %s\n' % (str(k), str(v)))
-            print('%s: %s' % (str(k), str(v)))
-        opt_file.write('-------------- End ----------------\n')
-        print('------------ End -------------')
+    if rank == 0:
+        os.makedirs(args.checkpoint_dir, exist_ok=True)
+        with open(args.setting_file, 'wt') as opt_file:
+            opt_file.write('------------ Options -------------\n')
+            print('------------ Options -------------')
+            for k in args.__dict__:
+                v = args.__dict__[k]
+                opt_file.write('%s: %s\n' % (str(k), str(v)))
+                print('%s: %s' % (str(k), str(v)))
+            opt_file.write('-------------- End ----------------\n')
+            print('------------ End -------------')
 
     return args
 

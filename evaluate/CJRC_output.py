@@ -6,9 +6,6 @@ import json
 from tqdm import tqdm
 
 
-# import ipdb
-
-
 def write_predictions(all_examples, all_features, all_results, n_best_size,
                       max_answer_length, do_lower_case, output_prediction_file,
                       output_nbest_file, version_2_with_negative=False, null_score_diff_threshold=0.):

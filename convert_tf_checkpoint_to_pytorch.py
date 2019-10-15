@@ -100,16 +100,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     ## Required parameters
     parser.add_argument("--tf_checkpoint_path",
-                        default='check_points/pretrain_models/albert_large_zh/albert_model.ckpt',
+                        default='check_points/pretrain_models/albert_xlarge_zh/albert_model.ckpt',
                         type=str,
                         help="Path the TensorFlow checkpoint path.")
     parser.add_argument("--bert_config_file",
-                        default='check_points/pretrain_models/albert_large_zh/albert_config_large.json',
+                        default='check_points/pretrain_models/albert_xlarge_zh/bert_config.json',
                         type=str,
                         help="The config json file corresponding to the pre-trained BERT model. \n"
                              "This specifies the model architecture.")
     parser.add_argument("--pytorch_dump_path",
-                        default='check_points/pretrain_models/albert_large_zh/pytorch_albert_model.pth',
+                        default='check_points/pretrain_models/albert_xlarge_zh/pytorch_model.pth',
                         type=str,
                         help="Path to the output PyTorch model.")
     parser.add_argument("--is_albert",
