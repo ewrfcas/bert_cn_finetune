@@ -22,7 +22,7 @@ finetune基于官方代码改造的模型基于pytorch/tensorflow双版本
 
 ### 关于pytorch的FP16
 
-FP16的训练可以显著降低显存压力(如果有V100等GPU资源还能提高速度)。但是最新版编译的apex-FP16对并行的支持并不友好(https://github.com/NVIDIA/apex/issues/227)。  
+FP16的训练可以显著降低显存压力(如果有V100等GPU资源还能提高速度)。但是最新版编译的apex-FP16对并行的支持并不友好(https://github.com/NVIDIA/apex/issues/227)  
 实践下来bert相关任务的finetune任务对fp16的数值压力是比较小的，因此可以更多的以计算精度换取效率，所以我还是倾向于使用老版的FusedAdam+FP16_Optimizer的组合。  
 由于最新的apex已经舍弃这2个方法了，需要在编译apex的时候额外加入命令--deprecated_fused_adam  
 ```
@@ -31,7 +31,8 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ### 关于tensorflow的blocksparse
 
-blocksparse(https://github.com/openai/blocksparse)可以在tensorflow1.13版本直接pip安装，否则可以自己clone后编译。  
+blocksparse(https://github.com/openai/blocksparse)  
+可以在tensorflow1.13版本直接pip安装，否则可以自己clone后编译。  
 其中fast_gelu以及self-attention中的softmax能够极大缓解显存压力。另外部分dropout位置我有所调整，整体显存占用下降大约30%~40%。
 
 model | length | batch | memory |
