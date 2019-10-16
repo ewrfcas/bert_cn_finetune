@@ -93,6 +93,11 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 
 #### cmrc2018(阅读理解)
 
+| models | setting | DEV |
+| ------ | ------ | ------ |
+| 哈工大讯飞 roberta_wwm_ext_large | tf单卡finetune batch=12 | **F1:89.415(89.724) EM:70.593(71.358)** |
+
+
 | models | DEV |
 | ------ | ------ |
 | sibert_base | F1:87.521(88.628) EM:67.381(69.152) |
