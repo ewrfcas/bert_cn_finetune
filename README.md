@@ -90,6 +90,7 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | brightmart roberta_middle | epoch2, batch=32, lr=3e-5, warmup=0.1 | 同左 | 同左 |
 | brightmart roberta_large | epoch2, batch=32, lr=3e-5, warmup=0.1 | 同左 | 同左 |
 | brightmart albert_large |  epoch3, batch=32, lr=2e-5, warmup=0.05 | epoch3, batch=32, lr=2e-5, warmup=0.05 | epoch2, batch=32, lr=3e-5, warmup=0.1 |
+| brightmart albert_xlarge |  epoch3, batch=32, lr=2e-5, warmup=0.1 | epoch3, batch=32, lr=2.5e-5, warmup=0.06 | epoch2, batch=32, lr=2.5e-5, warmup=0.05 |
 
 #### cmrc2018(阅读理解)
 
@@ -105,7 +106,8 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | 哈工大讯飞 roberta_wwm_ext_base | F1:87.521(88.628) EM:67.381(69.152) |
 | brightmart roberta_middle | F1:86.841(87.242) EM:67.195(68.313) |
 | brightmart roberta_large | **F1:88.608(89.431) EM:69.935(72.538)** |
-| brightmart albert_large | F1:87.8596(88.43) EM:67.754(69.028) |
+| brightmart albert_large | F1:87.860(88.43) EM:67.754(69.028) |
+| brightmart albert_xlarge | F1:88.657(89.426) EM:68.897(70.643) |
 
 #### DRCD(阅读理解)
 
@@ -114,8 +116,9 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | siBert_base | F1:93.343(93.524) EM:87.968(88.28) | F1:92.818 EM:86.745 |
 | siALBert_middle | F1:93.865(93.975) EM:88.723(88.961) | F1:93.857 EM:88.033 |
 | 哈工大讯飞 roberta_wwm_ext_base | F1:94.257(94.48) EM:89.291(89.642) | F1:93.526 EM:88.119 |
-| brightmart roberta_large | **F1:94.933(95.057) EM:90.113(90.238)** | **F1:94.254 EM:89.350** |
+| brightmart roberta_large | **F1:94.933(95.057) EM:90.113(90.238)** | F1:94.254 EM:89.350 |
 | brightmart albert_large | F1:93.9034(94.034) EM:88.882(89.132) | F1:93.057 EM:87.518 |
+| brightmart albert_xlarge | F1:94.626(95.101) EM:89.682(90.125) | **F1:94.697 EM:89.780** |
 
 #### CJRC(带有yes,no,unkown的阅读理解)
 
@@ -126,5 +129,6 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | 哈工大讯飞 roberta_wwm_ext_base | F1:81.510(81.684) EM:64.924(65.574) |
 | brightmart roberta_large | F1:80.16(80.475) EM:65.249(66.133) |
 | brightmart albert_large | F1:81.113(81.563) EM:65.346(65.727) |
+| brightmart albert_xlarge | **F1:81.879(82.328) EM:66.164(66.387)** |
 
 
