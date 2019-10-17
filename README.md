@@ -89,6 +89,7 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | models | cmrc2018 | DRCD | CJRC |
 | ------ | ------ | ------ | ------ |
 | 哈工大讯飞 roberta_wwm_ext_base | epoch2, batch=32, lr=3e-5, warmup=0.1 | 同左 | 同左 |
+| 哈工大讯飞 roberta_wwm_ext_base | epoch2, batch=12, lr=2e-5, warmup=0.1 | epoch2, batch=32, lr=2.5e-5, warmup=0.1 | - |
 | brightmart roberta_middle | epoch2, batch=32, lr=3e-5, warmup=0.1 | 同左 | 同左 |
 | brightmart roberta_large | epoch2, batch=32, lr=3e-5, warmup=0.1 | 同左 | 同左 |
 | brightmart albert_large |  epoch3, batch=32, lr=2e-5, warmup=0.05 | epoch3, batch=32, lr=2e-5, warmup=0.05 | epoch2, batch=32, lr=3e-5, warmup=0.1 |
@@ -106,8 +107,9 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | sibert_base | F1:87.521(88.628) EM:67.381(69.152) |
 | sialbert_middle | F1:87.6956(87.878) EM:67.897(68.624) |
 | 哈工大讯飞 roberta_wwm_ext_base | F1:87.521(88.628) EM:67.381(69.152) |
+| 哈工大讯飞 roberta_wwm_ext_large | **F1:89.415(89.724) EM:70.593(71.358)** |
 | brightmart roberta_middle | F1:86.841(87.242) EM:67.195(68.313) |
-| brightmart roberta_large | **F1:88.608(89.431) EM:69.935(72.538)** |
+| brightmart roberta_large | F1:88.608(89.431) EM:69.935(72.538) |
 | brightmart albert_large | F1:87.860(88.43) EM:67.754(69.028) |
 | brightmart albert_xlarge | F1:88.657(89.426) EM:68.897(70.643) |
 
@@ -118,9 +120,10 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | siBert_base | F1:93.343(93.524) EM:87.968(88.28) | F1:92.818 EM:86.745 |
 | siALBert_middle | F1:93.865(93.975) EM:88.723(88.961) | F1:93.857 EM:88.033 |
 | 哈工大讯飞 roberta_wwm_ext_base | F1:94.257(94.48) EM:89.291(89.642) | F1:93.526 EM:88.119 |
-| brightmart roberta_large | **F1:94.933(95.057) EM:90.113(90.238)** | F1:94.254 EM:89.350 |
-| brightmart albert_large | F1:93.9034(94.034) EM:88.882(89.132) | F1:93.057 EM:87.518 |
-| brightmart albert_xlarge | F1:94.626(95.101) EM:89.682(90.125) | **F1:94.697 EM:89.780** |
+| 哈工大讯飞 roberta_wwm_ext_large | **F1:95.323(95.54) EM:90.539(90.692)** | **F1:95.060 EM:90.696** |
+| brightmart roberta_large | F1:94.933(95.057) EM:90.113(90.238) | F1:94.254 EM:89.350 |
+| brightmart albert_large | F1:93.903(94.034) EM:88.882(89.132) | F1:93.057 EM:87.518 |
+| brightmart albert_xlarge | F1:94.626(95.101) EM:89.682(90.125) | F1:94.697 EM:89.780 |
 
 #### CJRC(带有yes,no,unkown的阅读理解)
 
