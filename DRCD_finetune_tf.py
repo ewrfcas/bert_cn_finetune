@@ -15,7 +15,7 @@ from optimizations.tf_optimization import Optimizer
 import json
 import utils
 from evaluate.cmrc2018_evaluate import get_eval
-from evaluate.cmrc2018_output import write_predictions
+from evaluate.DRCD_output import write_predictions
 import random
 from tqdm import tqdm
 import collections
@@ -27,13 +27,11 @@ def print_rank0(*args):
     if mpi_rank == 0:
         print(*args, flush=True)
 
-
 def get_session(sess):
     session = sess
     while type(session).__name__ != 'Session':
         session = session._sess
     return session
-
 
 def data_generator(data, n_batch, shuffle=False, drop_last=False):
     steps_per_epoch = len(data) // n_batch
@@ -56,12 +54,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     tf.logging.set_verbosity(tf.logging.ERROR)
 
-    parser.add_argument('--gpu_ids', type=str, default='0,1,2,3')
+    parser.add_argument('--gpu_ids', type=str, default='4,5,6,7')
 
     # training parameter
     parser.add_argument('--train_epochs', type=int, default=2)
     parser.add_argument('--n_batch', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=2e-5)
+    parser.add_argument('--lr', type=float, default=2.5e-5)
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--clip_norm', type=float, default=1.0)
     parser.add_argument('--loss_scale', type=float, default=2.0 ** 15)
@@ -81,17 +79,17 @@ if __name__ == '__main__':
     parser.add_argument('--vocab_file', type=str,
                         default='check_points/pretrain_models/roberta_wwm_ext_large/vocab.txt')
 
-    parser.add_argument('--train_dir', type=str, default='dataset/cmrc2018/train_features_roberta512.json')
-    parser.add_argument('--dev_dir1', type=str, default='dataset/cmrc2018/dev_examples_roberta512.json')
-    parser.add_argument('--dev_dir2', type=str, default='dataset/cmrc2018/dev_features_roberta512.json')
-    parser.add_argument('--train_file', type=str, default='origin_data/cmrc2018/cmrc2018_train.json')
-    parser.add_argument('--dev_file', type=str, default='origin_data/cmrc2018/cmrc2018_dev.json')
+    parser.add_argument('--train_dir', type=str, default='dataset/DRCD/train_features_roberta512.json')
+    parser.add_argument('--dev_dir1', type=str, default='dataset/DRCD/dev_examples_roberta512.json')
+    parser.add_argument('--dev_dir2', type=str, default='dataset/DRCD/dev_features_roberta512.json')
+    parser.add_argument('--train_file', type=str, default='origin_data/DRCD/DRCD_training.json')
+    parser.add_argument('--dev_file', type=str, default='origin_data/DRCD/DRCD_dev.json')
     parser.add_argument('--bert_config_file', type=str,
                         default='check_points/pretrain_models/roberta_wwm_ext_large/bert_config.json')
     parser.add_argument('--init_restore_dir', type=str,
                         default='check_points/pretrain_models/roberta_wwm_ext_large/bert_model.ckpt')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/cmrc2018/roberta_wwm_ext_large/')
+                        default='check_points/DRCD/roberta_wwm_ext_large/')
     parser.add_argument('--setting_file', type=str, default='setting.txt')
     parser.add_argument('--log_file', type=str, default='log.txt')
 

@@ -73,7 +73,8 @@ class Optimizer(object):
 
         if hvd is not None:
             from horovod.tensorflow.compression import Compression
-            optimizer = hvd.DistributedOptimizer(optimizer, sparse_as_dense=True, compression=Compression.none)
+            optimizer = hvd.DistributedOptimizer(optimizer, sparse_as_dense=True,
+                                                 compression=Compression.fp16 if use_fp16 else Compression.none)
         if use_fp16:
             loss_scale_manager = tf.contrib.mixed_precision.ExponentialUpdateLossScaleManager(
                 init_loss_scale=init_loss_scale,

@@ -114,7 +114,8 @@ try:
         return bs.softmax(qk_scores, scale)
 
 except:
-    print('WARNING!!!!Please install blocksparse for faster training and lower gpu memory cost!!!!!!')
+    print('Please install blocksparse for faster training and lower gpu memory cost'
+          '(https://github.com/openai/blocksparse)!!!')
 
 
     def layer_norm_ops(x, g, b, axis=1, segments=1, epsilon=1e-6):
@@ -556,58 +557,60 @@ class BertModel(object):
 
         with tf.variable_scope(scope, default_name="bert", reuse=tf.AUTO_REUSE,
                                custom_getter=get_custom_getter(tf.float16 if use_float16 else tf.float32)):
-            with tf.variable_scope("embeddings"):
-                # Perform embedding lookup on the word ids.
-                self.embedding_output, self.embedding_table = embedding_lookup(
-                    input_ids=input_ids,
-                    vocab_size=config.vocab_size,
-                    embedding_size=config.hidden_size,
-                    initializer_range=config.initializer_range,
-                    word_embedding_name="word_embeddings",
-                    use_float16=use_float16)
+            with tf.device("/gpu:0"):
+                with tf.variable_scope("embeddings"):
+                    # Perform embedding lookup on the word ids.
+                    self.embedding_output, self.embedding_table = embedding_lookup(
+                        input_ids=input_ids,
+                        vocab_size=config.vocab_size,
+                        embedding_size=config.hidden_size,
+                        initializer_range=config.initializer_range,
+                        word_embedding_name="word_embeddings",
+                        use_float16=use_float16)
 
-                # Add positional embeddings and token type embeddings, then layer
-                # normalize and perform dropout.
-                self.embedding_output = embedding_postprocessor(
-                    input_tensor=self.embedding_output,
-                    token_type_ids=token_type_ids,
-                    token_type_vocab_size=config.type_vocab_size,
-                    token_type_embedding_name="token_type_embeddings",
-                    position_embedding_name="position_embeddings",
-                    initializer_range=config.initializer_range,
-                    max_position_embeddings=config.max_position_embeddings,
-                    dropout_prob=config.hidden_dropout_prob,
-                    use_float16=use_float16)
+                    # Add positional embeddings and token type embeddings, then layer
+                    # normalize and perform dropout.
+                    self.embedding_output = embedding_postprocessor(
+                        input_tensor=self.embedding_output,
+                        token_type_ids=token_type_ids,
+                        token_type_vocab_size=config.type_vocab_size,
+                        token_type_embedding_name="token_type_embeddings",
+                        position_embedding_name="position_embeddings",
+                        initializer_range=config.initializer_range,
+                        max_position_embeddings=config.max_position_embeddings,
+                        dropout_prob=config.hidden_dropout_prob,
+                        use_float16=use_float16)
 
-            with tf.variable_scope("encoder"):
-                attention_mask = tf.reshape(input_mask, (-1, 1, 1, input_mask.shape[1]))  # [bs, len]->[bs, 1, 1, len]
-                attention_mask = tf.cast(attention_mask, self.embedding_output.dtype)
+                with tf.variable_scope("encoder"):
+                    attention_mask = tf.reshape(input_mask,
+                                                (-1, 1, 1, input_mask.shape[1]))  # [bs, len]->[bs, 1, 1, len]
+                    attention_mask = tf.cast(attention_mask, self.embedding_output.dtype)
 
-                # Run the stacked transformer.
-                # `sequence_output` shape = [batch_size, seq_length, hidden_size].
-                self.all_encoder_layers = transformer_model(
-                    input_tensor=self.embedding_output,
-                    attention_mask=attention_mask,
-                    hidden_size=config.hidden_size,
-                    num_hidden_layers=config.num_hidden_layers,
-                    num_attention_heads=config.num_attention_heads,
-                    intermediate_size=config.intermediate_size,
-                    intermediate_act_fn=config.hidden_act,
-                    hidden_dropout_prob=config.hidden_dropout_prob,
-                    attention_probs_dropout_prob=config.attention_probs_dropout_prob,
-                    initializer_range=config.initializer_range,
-                    do_return_all_layers=True)
+                    # Run the stacked transformer.
+                    # `sequence_output` shape = [batch_size, seq_length, hidden_size].
+                    self.all_encoder_layers = transformer_model(
+                        input_tensor=self.embedding_output,
+                        attention_mask=attention_mask,
+                        hidden_size=config.hidden_size,
+                        num_hidden_layers=config.num_hidden_layers,
+                        num_attention_heads=config.num_attention_heads,
+                        intermediate_size=config.intermediate_size,
+                        intermediate_act_fn=config.hidden_act,
+                        hidden_dropout_prob=config.hidden_dropout_prob,
+                        attention_probs_dropout_prob=config.attention_probs_dropout_prob,
+                        initializer_range=config.initializer_range,
+                        do_return_all_layers=True)
 
-            self.sequence_output = self.all_encoder_layers[-1]
-            with tf.variable_scope("pooler"):
-                # We "pool" the model by simply taking the hidden state corresponding
-                # to the first token. We assume that this has been pre-trained
-                first_token_tensor = tf.squeeze(self.sequence_output[:, 0:1, :], axis=1)
-                self.pooled_output = dense(
-                    first_token_tensor,
-                    config.hidden_size,
-                    activation='tanh',
-                    kernel_initializer=create_initializer(config.initializer_range))
+                self.sequence_output = self.all_encoder_layers[-1]
+                with tf.variable_scope("pooler"):
+                    # We "pool" the model by simply taking the hidden state corresponding
+                    # to the first token. We assume that this has been pre-trained
+                    first_token_tensor = tf.squeeze(self.sequence_output[:, 0:1, :], axis=1)
+                    self.pooled_output = dense(
+                        first_token_tensor,
+                        config.hidden_size,
+                        activation='tanh',
+                        kernel_initializer=create_initializer(config.initializer_range))
 
     def get_pooled_output(self):
         return self.pooled_output
@@ -636,10 +639,10 @@ class BertModelMRC(object):
                  end_positions=None,
                  use_float16=False,
                  scope="bert"):
-        with tf.device("/gpu:0"):
-            self.bert = BertModel(config, is_training, input_ids, input_mask, token_type_ids, use_float16, scope)
+        self.bert = BertModel(config, is_training, input_ids, input_mask, token_type_ids, use_float16, scope)
 
-            # finetune mrc
+        # finetune mrc
+        with tf.device("/gpu:0"):
             with tf.variable_scope('finetune_mrc', reuse=tf.AUTO_REUSE,
                                    custom_getter=get_custom_getter(tf.float16 if use_float16 else tf.float32)):
                 self.sequence_output = self.bert.get_sequence_output()
