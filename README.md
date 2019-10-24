@@ -2,7 +2,7 @@
 
 finetune基于官方代码改造的模型基于pytorch/tensorflow双版本
 
-*** 2019-10-24: 增加ERNIE1.0, google-bert-base, bert_wwm_ext_base部分结果 ***
+*** 2019-10-24: 增加ERNIE1.0, google-bert-base, bert_wwm_ext_base部分结果, xlnet代码和相关结果 ***
 
 *** 2019-10-17: 增加tensorflow多gpu并行 ***
 
@@ -79,11 +79,18 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 
 | models | config |
 | ------ | ------ |
+| google_bert_base | L=12, H=768, A=12, max_len=512 |
 | siBert_base | L=12, H=768, A=12, max_len=512 |
 | siALBert_middle | L=16, H=1024, E=128, A=16, max_len=512 |
+| 哈工大讯飞 bert_wwm_ext_base | L=12, H=768, A=12, max_len=512 |
 | 哈工大讯飞 roberta_wwm_ext_base | L=12, H=768, A=12, max_len=512 |
+| 哈工大讯飞 roberta_wwm_ext_large | L=24, H=1024, A=16, max_len=512 |
+| ERNIE1.0 | L=12, H=768, A=12, max_len=512 |
+| xlnet-mid | L=24, H=768, A=12, max_len=512 |
 | brightmart roberta_middle | L=24, H=768, A=12, max_len=512 |
 | brightmart roberta_large | L=24, H=1024, A=16, **max_len=256** |
+| brightmart albert_large | L=24, H=1024, E=128, A=16, max_len=512 |
+| brightmart albert_xlarge | L=24, H=2048, E=128, A=32, max_len=512 |
 
 
 ### 结果
@@ -95,7 +102,7 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | models | cmrc2018 | DRCD | CJRC |
 | ------ | ------ | ------ | ------ |
 | 哈工大讯飞 roberta_wwm_ext_base | epoch2, batch=32, lr=3e-5, warmup=0.1 | 同左 | 同左 |
-| 哈工大讯飞 roberta_wwm_ext_base | epoch2, batch=12, lr=2e-5, warmup=0.1 | epoch2, batch=32, lr=2.5e-5, warmup=0.1 | - |
+| 哈工大讯飞 roberta_wwm_ext_large | epoch2, batch=12, lr=2e-5, warmup=0.1 | epoch2, batch=32, lr=2.5e-5, warmup=0.1 | - |
 | brightmart roberta_middle | epoch2, batch=32, lr=3e-5, warmup=0.1 | 同左 | 同左 |
 | brightmart roberta_large | epoch2, batch=32, lr=3e-5, warmup=0.1 | 同左 | 同左 |
 | brightmart albert_large |  epoch3, batch=32, lr=2e-5, warmup=0.05 | epoch3, batch=32, lr=2e-5, warmup=0.05 | epoch2, batch=32, lr=3e-5, warmup=0.1 |
@@ -117,6 +124,7 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | 哈工大讯飞 roberta_wwm_ext_base | F1:87.521(88.628) EM:67.381(69.152) |
 | 哈工大讯飞 roberta_wwm_ext_large | **F1:89.415(89.724) EM:70.593(71.358)** |
 | ERNIE1.0 | F1:87.300(87.733) EM:66.890(68.251) |
+| xlnet-mid | F1:85.625(86.076) EM:65.312(66.076) |
 | brightmart roberta_middle | F1:86.841(87.242) EM:67.195(68.313) |
 | brightmart roberta_large | F1:88.608(89.431) EM:69.935(72.538) |
 | brightmart albert_large | F1:87.860(88.43) EM:67.754(69.028) |
@@ -133,6 +141,7 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | 哈工大讯飞 roberta_wwm_ext_base | F1:94.257(94.48) EM:89.291(89.642) | F1:93.526 EM:88.119 |
 | 哈工大讯飞 roberta_wwm_ext_large | **F1:95.323(95.54) EM:90.539(90.692)** | **F1:95.060 EM:90.696** |
 | ERNIE1.0 | F1:92.779(93.021) EM:86.845(87.259) | F1:92.011 EM:86.029 |
+| xlnet-mid | F1:92.081(92.175) EM:84.404(84.563) | F1:91.439 EM:83.281 |
 | brightmart roberta_large | F1:94.933(95.057) EM:90.113(90.238) | F1:94.254 EM:89.350 |
 | brightmart albert_large | F1:93.903(94.034) EM:88.882(89.132) | F1:93.057 EM:87.518 |
 | brightmart albert_xlarge | F1:94.626(95.101) EM:89.682(90.125) | F1:94.697 EM:89.780 |
