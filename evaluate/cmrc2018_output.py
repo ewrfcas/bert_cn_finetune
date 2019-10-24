@@ -1,5 +1,6 @@
 import collections
 import sys
+
 sys.path.append('../tokenizations')
 from tokenizations.offical_tokenization import BasicTokenizer
 import math
@@ -7,12 +8,18 @@ import json
 from tqdm import tqdm
 
 
-def write_predictions_topk(config, all_examples, all_features, all_results, n_best_size,
-                           max_answer_length, do_lower_case, output_prediction_file,
-                           output_nbest_file):
+def write_predictions_topk(FLAGS, all_examples, all_features, all_results, n_best_size,
+                           max_answer_length, output_prediction_file, output_nbest_file):
+    _PrelimPrediction = collections.namedtuple(  # pylint: disable=invalid-name
+        "PrelimPrediction",
+        ["feature_index", "start_index", "end_index",
+         "start_log_prob", "end_log_prob"])
+
+    _NbestPrediction = collections.namedtuple(  # pylint: disable=invalid-name
+        "NbestPrediction", ["text", "start_log_prob", "end_log_prob"])
+
     """Write final predictions to the json file and log-odds of null if needed."""
     print("Writing predictions to: %s" % (output_prediction_file))
-    print("Writing nbest to: %s" % (output_nbest_file))
 
     example_index_to_features = collections.defaultdict(list)
     for feature in all_features:
@@ -22,37 +29,45 @@ def write_predictions_topk(config, all_examples, all_features, all_results, n_be
     for result in all_results:
         unique_id_to_result[result.unique_id] = result
 
-    _PrelimPrediction = collections.namedtuple(  # pylint: disable=invalid-name
-        "PrelimPrediction",
-        ["feature_index", "start_index", "end_index", "start_logit", "end_logit"])
-
     all_predictions = collections.OrderedDict()
     all_nbest_json = collections.OrderedDict()
+    scores_diff_json = collections.OrderedDict()
 
-    for (example_index, example) in enumerate(tqdm(all_examples)):
+    for (example_index, example) in enumerate(all_examples):
         features = example_index_to_features[example_index]
+
         prelim_predictions = []
         # keep track of the minimum score of null start+end of position 0
+        score_null = 1000000  # large and positive
+
         for (feature_index, feature) in enumerate(features):
             result = unique_id_to_result[feature['unique_id']]
-            for i in range(config.start_n_top):
-                for j in range(config.end_n_top):
-                    start_logit = result.start_top_logits[i]
+
+            cur_null_score = result.cls_logits
+
+            # if we could have irrelevant answers, get the min score of irrelevant
+            score_null = min(score_null, cur_null_score)
+
+            for i in range(FLAGS.start_n_top):
+                for j in range(FLAGS.end_n_top):
+                    start_log_prob = result.start_top_log_probs[i]
                     start_index = result.start_top_index[i]
 
-                    j_index = i * config.end_n_top + j
+                    j_index = i * FLAGS.end_n_top + j
 
-                    end_logit = result.end_top_logits[j_index]
+                    end_log_prob = result.end_top_log_probs[j_index]
                     end_index = result.end_top_index[j_index]
 
                     # We could hypothetically create invalid predictions, e.g., predict
                     # that the start of the span is in the question. We throw out all
                     # invalid predictions.
-                    if start_index >= len(feature['tokens']):
+                    if start_index >= feature['paragraph_len'] - 1:
                         continue
-                    if end_index >= len(feature['tokens']):
+                    if end_index >= feature['paragraph_len'] - 1:
                         continue
-                    if not feature['token_is_max_context'].get(str(start_index), False):
+
+                    if not feature['token_is_max_context'].get(start_index, False) and \
+                            not feature['token_is_max_context'].get(str(start_index), False):
                         continue
                     if end_index < start_index:
                         continue
@@ -65,87 +80,75 @@ def write_predictions_topk(config, all_examples, all_features, all_results, n_be
                             feature_index=feature_index,
                             start_index=start_index,
                             end_index=end_index,
-                            start_logit=start_logit,
-                            end_logit=end_logit))
+                            start_log_prob=start_log_prob,
+                            end_log_prob=end_log_prob))
 
         prelim_predictions = sorted(
             prelim_predictions,
-            key=lambda x: (x.start_logit + x.end_logit),
+            key=lambda x: (x.start_log_prob + x.end_log_prob),
             reverse=True)
-
-        _NbestPrediction = collections.namedtuple(  # pylint: disable=invalid-name
-            "NbestPrediction", ["text", "start_logit", "end_logit"])
 
         seen_predictions = {}
         nbest = []
-        # ipdb.set_trace()
         for pred in prelim_predictions:
             if len(nbest) >= n_best_size:
                 break
             feature = features[pred.feature_index]
-            if pred.start_index > 0:  # this is a non-null prediction
-                tok_tokens = feature['tokens'][pred.start_index:(pred.end_index + 1)]
-                orig_doc_start = feature['token_to_orig_map'][str(pred.start_index)]
-                orig_doc_end = feature['token_to_orig_map'][str(pred.end_index)]
-                orig_tokens = example['doc_tokens'][orig_doc_start:(orig_doc_end + 1)]
-                tok_text = "".join(tok_tokens)
 
-                # De-tokenize WordPieces that have been split off.
-                tok_text = tok_text.replace(" ##", "")
-                tok_text = tok_text.replace("##", "")
+            tok_start_to_orig_index = feature['tok_start_to_orig_index']
+            tok_end_to_orig_index = feature['tok_end_to_orig_index']
+            start_orig_pos = tok_start_to_orig_index[pred.start_index]
+            end_orig_pos = tok_end_to_orig_index[pred.end_index]
 
-                # Clean whitespace
-                tok_text = tok_text.strip()
-                tok_text = " ".join(tok_text.split())
-                orig_text = "".join(orig_tokens)
+            paragraph_text = example['paragraph_text']
+            final_text = paragraph_text[start_orig_pos: end_orig_pos + 1].strip()
 
-                final_text = get_final_text(tok_text, orig_text, do_lower_case)
-                if final_text in seen_predictions:
-                    continue
+            if final_text in seen_predictions:
+                continue
 
-                seen_predictions[final_text] = True
-            else:
-                final_text = ""
-                seen_predictions[final_text] = True
+            seen_predictions[final_text] = True
 
             nbest.append(
                 _NbestPrediction(
                     text=final_text,
-                    start_logit=pred.start_logit,
-                    end_logit=pred.end_logit))
+                    start_log_prob=pred.start_log_prob,
+                    end_log_prob=pred.end_log_prob))
 
         # In very rare edge cases we could have no valid predictions. So we
         # just create a nonce prediction in this case to avoid failure.
         if not nbest:
-            nbest.append(_NbestPrediction(text="empty", start_logit=0.0, end_logit=0.0))
-
-        assert len(nbest) >= 1
-        # ipdb.set_trace()
+            nbest.append(
+                _NbestPrediction(text="", start_log_prob=-1e6,
+                                 end_log_prob=-1e6))
 
         total_scores = []
+        best_non_null_entry = None
         for entry in nbest:
-            total_scores.append(entry.start_logit + entry.end_logit)
+            total_scores.append(entry.start_log_prob + entry.end_log_prob)
+            if not best_non_null_entry:
+                best_non_null_entry = entry
 
         probs = _compute_softmax(total_scores)
 
-        # ipdb.set_trace()
-
         nbest_json = []
-        # ipdb.set_trace()
         for (i, entry) in enumerate(nbest):
             output = collections.OrderedDict()
             output["text"] = entry.text
-            output["probability"] = float(probs[i])
-            output["start_logit"] = float(entry.start_logit)
-            output["end_logit"] = float(entry.end_logit)
+            output["probability"] = probs[i]
+            output["start_log_prob"] = entry.start_log_prob
+            output["end_log_prob"] = entry.end_log_prob
             nbest_json.append(output)
 
         assert len(nbest_json) >= 1
+        assert best_non_null_entry is not None
 
-        # ipdb.set_trace()
+        score_diff = score_null
+        scores_diff_json[example['qas_id']] = score_diff
+        # note(zhiliny): always predict best_non_null_entry
+        # and the evaluation script will search for the best threshold
+        all_predictions[example['qas_id']] = best_non_null_entry.text
 
-        all_predictions[example['qid']] = nbest_json[0]["text"]
-        all_nbest_json[example['qid']] = nbest_json
+        all_nbest_json[example['qas_id']] = nbest_json
 
     with open(output_prediction_file, "w") as writer:
         writer.write(json.dumps(all_predictions, indent=4, ensure_ascii=False) + "\n")
