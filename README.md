@@ -14,7 +14,7 @@ finetune基于官方代码改造的模型基于pytorch/tensorflow双版本
 
 *** 2019-10-12: pytorch支持albert ***
 
-*** 2019-12-9: 新增cmrc2019finetune google版albert ***
+*** 2019-12-9: 新增cmrc2019 finetune google版albert, 新增CHID finetune代码***
 
 ### 模型及相关代码来源
 
