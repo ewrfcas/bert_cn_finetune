@@ -1,7 +1,7 @@
 import json
 from tqdm import tqdm
 import collections
-import tokenizations.offical_tokenization as tokenization
+import tokenizations.official_tokenization as tokenization
 import os
 import copy
 
