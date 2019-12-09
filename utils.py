@@ -63,7 +63,7 @@ def get_assigment_map_from_checkpoint(tvars, init_checkpoint):
     for x in init_vars:
         (name, var) = (x[0], x[1])
         if name not in name_to_variable:
-            if 'adam' not in name:
+            if 'adam' not in name and 'lamb' not in name and 'accum' not in name:
                 unused_variable_names.add(name)
             continue
         # assignment_map[name] = name
