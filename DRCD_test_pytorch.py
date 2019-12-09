@@ -11,7 +11,7 @@ import collections
 from torch import nn
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-from tokenizations import offical_tokenization as tokenization
+from tokenizations import official_tokenization as tokenization
 from preprocess.DRCD_preprocess import json2features
 
 
@@ -60,7 +60,7 @@ def test(model, args, eval_examples, eval_features, device):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu_ids', type=str, default='6')
+    parser.add_argument('--gpu_ids', type=str, default='1')
 
     # training parameter
     parser.add_argument('--train_epochs', type=int, default=2)
@@ -86,13 +86,13 @@ if __name__ == '__main__':
     parser.add_argument('--test_file', type=str,
                         default='origin_data/DRCD/DRCD_test.json')
     parser.add_argument('--bert_config_file', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_config.json')
+                        default='check_points/pretrain_models/bert_wwm_ext_base/bert_config.json')
     parser.add_argument('--vocab_file', type=str,
-                        default='check_points/pretrain_models/roberta_wwm_ext_base/vocab.txt')
+                        default='check_points/pretrain_models/bert_wwm_ext_base/vocab.txt')
     parser.add_argument('--init_restore_dir', type=str,
-                        default='check_points/DRCD/roberta_wwm_ext_base/')
+                        default='check_points/DRCD/bert_wwm_ext_base/')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/DRCD/roberta_wwm_ext_base/')
+                        default='check_points/DRCD/bert_wwm_ext_base/')
 
     # use some global vars for convenience
     args = parser.parse_args()

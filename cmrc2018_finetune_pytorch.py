@@ -14,7 +14,7 @@ import collections
 from torch import nn
 from torch.utils.data import TensorDataset, DataLoader
 from tqdm import tqdm
-from tokenizations import offical_tokenization as tokenization
+from tokenizations import official_tokenization as tokenization
 from preprocess.cmrc2018_preprocess import json2features
 
 
@@ -82,19 +82,19 @@ def evaluate(model, args, eval_examples, eval_features, device, global_steps, be
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--gpu_ids', type=str, default='0,1,2,3')
+    parser.add_argument('--gpu_ids', type=str, default='2,3')
 
     # training parameter
-    parser.add_argument('--train_epochs', type=int, default=3)
+    parser.add_argument('--train_epochs', type=int, default=2)
     parser.add_argument('--n_batch', type=int, default=32)
-    parser.add_argument('--lr', type=float, default=2e-5)
+    parser.add_argument('--lr', type=float, default=3e-5)
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--clip_norm', type=float, default=1.0)
     parser.add_argument('--warmup_rate', type=float, default=0.1)
     parser.add_argument("--schedule", default='warmup_linear', type=str, help='schedule')
     parser.add_argument("--weight_decay_rate", default=0.01, type=float, help='weight_decay_rate')
     parser.add_argument('--seed', type=list, default=[123, 456, 789, 556, 977])
-    parser.add_argument('--float16', type=bool, default=False)  # only sm >= 7.0 (tensorcores)
+    parser.add_argument('--float16', type=bool, default=True)  # only sm >= 7.0 (tensorcores)
     parser.add_argument('--max_ans_length', type=int, default=50)
     parser.add_argument('--n_best', type=int, default=20)
     parser.add_argument('--eval_epochs', type=float, default=0.5)
@@ -113,13 +113,13 @@ if __name__ == '__main__':
     parser.add_argument('--dev_file', type=str,
                         default='origin_data/cmrc2018/cmrc2018_dev.json')
     parser.add_argument('--bert_config_file', type=str,
-                        default='check_points/pretrain_models/albert_large_zh/albert_config_large.json')
+                        default='check_points/pretrain_models/roberta_wwm_ext_base/bert_config.json')
     parser.add_argument('--vocab_file', type=str,
-                        default='check_points/pretrain_models/albert_large_zh/vocab.txt')
+                        default='check_points/pretrain_models/roberta_wwm_ext_base/vocab.txt')
     parser.add_argument('--init_restore_dir', type=str,
-                        default='check_points/pretrain_models/albert_large_zh/pytorch_albert_model.pth')
+                        default='check_points/pretrain_models/roberta_wwm_ext_base/pytorch_model.pth')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/cmrc2018/albert_large_zh/')
+                        default='check_points/cmrc2018/roberta_wwm_ext_base/')
     parser.add_argument('--setting_file', type=str, default='setting.txt')
     parser.add_argument('--log_file', type=str, default='log.txt')
 
