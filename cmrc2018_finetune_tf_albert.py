@@ -19,7 +19,7 @@ from evaluate.cmrc2018_output import write_predictions
 import random
 from tqdm import tqdm
 import collections
-from tokenizations.offical_tokenization import BertTokenizer
+from tokenizations.official_tokenization import BertTokenizer
 from preprocess.cmrc2018_preprocess import json2features
 
 
@@ -56,12 +56,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     tf.logging.set_verbosity(tf.logging.ERROR)
 
-    parser.add_argument('--gpu_ids', type=str, default='0,1,2,3')
+    parser.add_argument('--gpu_ids', type=str, default='7')
 
     # training parameter
     parser.add_argument('--train_epochs', type=int, default=2)
-    parser.add_argument('--n_batch', type=int, default=12)
-    parser.add_argument('--lr', type=float, default=2e-5)
+    parser.add_argument('--n_batch', type=int, default=32)
+    parser.add_argument('--lr', type=float, default=3e-5)
     parser.add_argument('--dropout', type=float, default=0.1)
     parser.add_argument('--clip_norm', type=float, default=1.0)
     parser.add_argument('--loss_scale', type=float, default=2.0 ** 15)
@@ -87,11 +87,11 @@ if __name__ == '__main__':
     parser.add_argument('--train_file', type=str, default='origin_data/cmrc2018/cmrc2018_train.json')
     parser.add_argument('--dev_file', type=str, default='origin_data/cmrc2018/cmrc2018_dev.json')
     parser.add_argument('--bert_config_file', type=str,
-                        default='check_points/pretrain_models/albert_xxlarge_google_zh_v1121/bert_config.json')
+                        default='check_points/pretrain_models/albert_base_chinese/bert_config.json')
     parser.add_argument('--init_restore_dir', type=str,
-                        default='check_points/pretrain_models/albert_xxlarge_google_zh_v1121/model.ckpt-best')
+                        default='check_points/pretrain_models/albert_base_chinese/model.ckpt-best')
     parser.add_argument('--checkpoint_dir', type=str,
-                        default='check_points/cmrc2018/albert_xxlarge_google_zh_v1121/')
+                        default='check_points/cmrc2018/albert_base_chinese/')
     parser.add_argument('--setting_file', type=str, default='setting.txt')
     parser.add_argument('--log_file', type=str, default='log.txt')
 
