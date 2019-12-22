@@ -16,7 +16,7 @@ finetune基于官方代码改造的模型基于pytorch/tensorflow双版本
 
 *** 2019-12-9: 新增cmrc2019 finetune google版albert, 新增CHID finetune代码***
 
-*** 2019-12-22: 新增c3 finetune代码***
+*** 2019-12-22: 新增c3 finetune代码和CHID, c3的部分结果***
 
 ### 模型及相关代码来源
 
@@ -59,9 +59,9 @@ model | length | batch | memory |
 
 3. CJRC: 法律阅读理解（简体中文, 只有训练集，统一90%训练，10%测试）
 
-4. CHID
+4. CHID: 多选成语阅读理解
 
-5. C3
+5. C3: 多选中文阅读理解
 
 ### 评测标准
 
@@ -87,6 +87,7 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | brightmart roberta_large | L=24, H=1024, A=16, **max_len=256** |
 | brightmart albert_large | L=24, H=1024, E=128, A=16, max_len=512 |
 | brightmart albert_xlarge | L=24, H=2048, E=128, A=32, max_len=512 |
+| google albert_xxlarge | L=12, H=4096, E=128, A=16, max_len=512 |
 
 
 ### 结果
@@ -152,5 +153,24 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | brightmart roberta_large | F1:80.16(80.475) EM:65.249(66.133) |
 | brightmart albert_large | F1:81.113(81.563) EM:65.346(65.727) |
 | brightmart albert_xlarge | **F1:81.879(82.328) EM:66.164(66.387)** |
+
+#### CHID(多选成语阅读理解)
+
+| models | DEV | TEST | OUT |
+| ------ | ------ | ------ | ------ |
+| google_base | 82.20 |  82.04 | 77.07 |
+| 哈工大讯飞 roberta_wwm_ext_base | 83.78 | 83.62 | - |
+| 哈工大讯飞 roberta_wwm_ext_large | **85.81** |	**85.37** | **81.98** |
+| brightmart roberta_large | 85.31 | 84.50 | - |
+| brightmart albert_xlarge | 79.44 | 79.55 | 75.39 |
+| google albert_xxlarge | 83.61	 | 83.15 |	79.95 |
+
+#### C<sup>3</sup>(多选中文阅读理解)
+
+| models | DEV | TEST |
+| ------ | ------ | ------ |
+| 哈工大讯飞 roberta_wwm_ext_base | 67.06 |	66.50 |
+| 哈工大讯飞 roberta_wwm_ext_large | 74.48 |	73.82 |
+| google albert_xxlarge | 73.663 |	73.278 |
 
 
