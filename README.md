@@ -171,6 +171,6 @@ L(transformer layers), H(hidden size), A(attention head numbers), E(embedding si
 | ------ | ------ | ------ |
 | 哈工大讯飞 roberta_wwm_ext_base | 67.06 |	66.50 |
 | 哈工大讯飞 roberta_wwm_ext_large | 74.48 |	73.82 |
-| google albert_xxlarge | 73.663 |	73.278 |
+| google albert_xxlarge | 73.66 |	73.28 |
 
 
