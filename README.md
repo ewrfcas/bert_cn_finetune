@@ -16,6 +16,8 @@ finetune基于官方代码改造的模型基于pytorch/tensorflow双版本
 
 *** 2019-12-9: 新增cmrc2019 finetune google版albert, 新增CHID finetune代码***
 
+*** 2019-12-22: 新增c3 finetune代码***
+
 ### 模型及相关代码来源
 
 1. 官方Bert (https://github.com/google-research/bert)

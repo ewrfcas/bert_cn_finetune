@@ -1029,7 +1029,9 @@ class XLNetModel(object):
         xlnet_config = self.xlnet_config
         run_config = self.run_config
 
-        with tf.variable_scope("model", reuse=tf.AUTO_REUSE):
+        with tf.variable_scope("model_output",
+                               custom_getter=get_custom_getter(tf.float16 if self.run_config.float16 else tf.float32),
+                               reuse=tf.AUTO_REUSE):
             summary = summarize_sequence(
                 summary_type=summary_type,
                 hidden=self.output,
@@ -1204,3 +1206,50 @@ def get_qa_outputs(FLAGS, inputs, is_training):
         return_dict["cls_logits"] = cls_logits
 
     return return_dict
+
+
+def get_race_loss(FLAGS, features, is_training, choice_num):
+    """Loss for downstream multi-choice QA tasks such as RACE."""
+
+    bsz_per_core = tf.shape(features["input_ids"])[0]
+
+    def _transform_features(feature):
+        out = tf.reshape(feature, [bsz_per_core, choice_num, -1])
+        out = tf.transpose(out, [2, 0, 1])
+        out = tf.reshape(out, [-1, bsz_per_core * choice_num])
+        return out
+
+    inp = _transform_features(features["input_ids"])
+    seg_id = _transform_features(features["segment_ids"])
+    inp_mask = _transform_features(features["input_mask"])
+    label = tf.reshape(features["label_ids"], [bsz_per_core])
+    # cls_index = tf.reshape(features["cls_index"], [-1]) # [bs*10]
+
+    xlnet_config = XLNetConfig(json_path=FLAGS.model_config_path)
+    run_config = create_run_config(is_training, True, FLAGS)
+
+    xlnet_model = XLNetModel(
+        xlnet_config=xlnet_config,
+        run_config=run_config,
+        input_ids=inp,
+        seg_ids=seg_id,
+        input_mask=inp_mask)
+
+    summary = xlnet_model.get_pooled_out(summary_type='last', use_summ_proj=True)
+
+    with tf.variable_scope("logits", custom_getter=get_custom_getter(tf.float16 if FLAGS.float16 else tf.float32),
+                           reuse=tf.AUTO_REUSE):
+        logits = tf.layers.dense(summary, 1,
+                                 kernel_initializer=xlnet_model.get_initializer())
+        logits = tf.reshape(logits, [bsz_per_core, choice_num])
+        logits = tf.cast(logits, tf.float32)
+
+        if not is_training:
+            return logits
+
+        else:
+            one_hot_target = tf.one_hot(label, choice_num)
+            per_example_loss = -tf.reduce_sum(tf.nn.log_softmax(logits) * one_hot_target, -1)
+            total_loss = tf.reduce_mean(per_example_loss)
+
+            return total_loss, per_example_loss, logits
