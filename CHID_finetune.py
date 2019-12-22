@@ -35,6 +35,7 @@ from torch.utils.data.distributed import DistributedSampler
 from tokenizations.official_tokenization import BertTokenizer
 from models.pytorch_modeling import BertConfig, BertForMultipleChoice
 from models.pytorch_modeling import ALBertConfig, ALBertForMultipleChoice
+from models.google_albert_pytorch_modeling import AlbertConfig, AlbertForMultipleChoice
 from optimizations.pytorch_optimization import get_optimization, warmup_linear
 from CHID_preprocess import RawResult, get_final_predictions, write_predictions, generate_input, InputFeatures, evaluate
 
@@ -83,14 +84,14 @@ def reset_model(args, bert_config, model_cls):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--gpu_ids", default='4,5', type=str)
-    parser.add_argument("--model_name", default='bert_wwm_ext_base')
+    parser.add_argument("--gpu_ids", default='0,1,2,3,4,5,6,7', type=str)
+    parser.add_argument("--model_name", default='albert_xxlarge_google_zh')
     parser.add_argument("--bert_config_file",
-                        default='check_points/pretrain_models/bert_wwm_ext_base/bert_config.json')
+                        default='check_points/pretrain_models/albert_xxlarge_google_zh_v1121/bert_config.json')
     parser.add_argument("--vocab_file",
-                        default='check_points/pretrain_models/bert_wwm_ext_base/vocab.txt')
+                        default='check_points/pretrain_models/albert_xlarge_zh/vocab.txt')
     parser.add_argument("--init_checkpoint",
-                        default='check_points/pretrain_models/bert_wwm_ext_base/pytorch_model.pth')
+                        default='check_points/pretrain_models/albert_xxlarge_google_zh_v1121/pytorch_model.pth')
     parser.add_argument("--input_dir", default='dataset/CHID')
     parser.add_argument("--output_dir", default='check_points/CHID')
 
@@ -110,7 +111,7 @@ def main():
                         help="The maximum number of cadicate answer,  shorter than this will be padded.")
     parser.add_argument("--do_train", default=True, action='store_true', help="Whether to run training.")
     parser.add_argument("--do_predict", default=True, action='store_true', help="Whether to run eval on the dev set.")
-    parser.add_argument("--train_batch_size", default=20, type=int, help="Total batch size for training.")
+    parser.add_argument("--train_batch_size", default=32, type=int, help="Total batch size for training.")
     parser.add_argument("--predict_batch_size", default=16, type=int, help="Total batch size for predictions.")
     parser.add_argument("--learning_rate", default=2e-5, type=float, help="The initial learning rate for Adam.")
     parser.add_argument("--num_train_epochs", default=3.0, type=float,
@@ -124,7 +125,7 @@ def main():
                         help="Whether not to use CUDA when available")
     parser.add_argument('--seed',
                         type=int,
-                        default=42,
+                        default=422,
                         help="random seed for initialization")
     parser.add_argument('--gradient_accumulation_steps',
                         type=int,
@@ -238,8 +239,12 @@ def main():
 
         # Prepare model
         if 'albert' in args.model_name:
-            bert_config = ALBertConfig.from_json_file(args.bert_config_file)
-            model = reset_model(args, bert_config, ALBertForMultipleChoice)
+            if 'google' in args.model_name:
+                bert_config = AlbertConfig.from_json_file(args.bert_config_file)
+                model = reset_model(args, bert_config, AlbertForMultipleChoice)
+            else:
+                bert_config = ALBertConfig.from_json_file(args.bert_config_file)
+                model = reset_model(args, bert_config, ALBertForMultipleChoice)
         else:
             bert_config = BertConfig.from_json_file(args.bert_config_file)
             model = reset_model(args, bert_config, BertForMultipleChoice)
@@ -255,7 +260,7 @@ def main():
                                      warmup_rate=args.warmup_proportion,
                                      weight_decay_rate=0.01,
                                      max_grad_norm=1.0,
-                                     opt_pooler=True)
+                                     opt_pooler=True) # multi_choice must update pooler
 
         global_step = 0
         best_acc = 0

@@ -59,17 +59,9 @@ model | length | batch | memory |
 
 3. CJRC: 法律阅读理解（简体中文, 只有训练集，统一90%训练，10%测试）
 
-4. XNLI：自然语言推断 (todo)
+4. CHID
 
-5. Msra-ner：中文命名实体识别 (todo)
-
-6. THUCNews：篇章级文本分类 (todo)
-
-7. Dbqa: ...
-
-8. Chnsenticorp: ...
-
-9. Lcqmc: ...
+5. C3
 
 ### 评测标准
 
