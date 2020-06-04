@@ -18,6 +18,8 @@ finetune基于官方代码改造的模型基于pytorch/tensorflow双版本
 
 *** 2019-12-22: 新增c3 finetune代码和CHID, c3的部分结果***
 
+*** 2020-6-4: 新增pytorch转tf，tf转pb，以及pb测试demo***
+
 ### 模型及相关代码来源
 
 1. 官方Bert (https://github.com/google-research/bert)
